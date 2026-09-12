@@ -1,5 +1,5 @@
-import {estimateTokens, fitsWithin, truncateToTokens, splitByTokens, analyze, supportedEncodings} from 'token-budget';
-import type {Encoding, Mode, Options, TruncateResult, Features} from 'token-budget';
+import {estimateTokens, fitsWithin, truncateToTokens, splitByTokens, analyze, supportedEncodings} from 'token-estimate';
+import type {Encoding, Mode, Options, TruncateResult, Features} from 'token-estimate';
 
 const count: number = estimateTokens('hello');
 const withOptions: number = estimateTokens('hello', {encoding: 'cl100k_base', mode: 'safe'});

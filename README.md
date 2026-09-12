@@ -1,9 +1,9 @@
-# token-budget
+# token-estimate
 
 Estimate how many tokens a string will cost, without installing a tokenizer.
 
 ```js
-import {estimateTokens, fitsWithin, truncateToTokens} from 'token-budget';
+import {estimateTokens, fitsWithin, truncateToTokens} from 'token-estimate';
 
 estimateTokens('The build finished with no errors.');   // 7, and the exact count is 7
 fitsWithin(hugeToolOutput, 8000);                        // false
@@ -13,7 +13,7 @@ truncateToTokens(hugeToolOutput, 8000).text;             // trimmed to fit
 Zero runtime dependencies. Strings in, numbers out; nothing is spawned, read or written. ESM, CommonJS and TypeScript declarations. Node 18+.
 
 ```sh
-npm install token-budget
+npm install token-estimate
 ```
 
 ## Why estimate at all
@@ -24,7 +24,7 @@ Because the exact answer is expensive to carry:
 |---|---:|---:|
 | `gpt-tokenizer` (exact) | 29.8 MB | 146 ms |
 | `js-tiktoken` (exact) | 22.0 MB | 253 ms |
-| **token-budget** | **39 kB** | **~5 ms** |
+| **token-estimate** | **39 kB** | **~5 ms** |
 
 Estimating is also linear in input length: 160 kB of pathological whitespace takes about 5 ms.
 
@@ -38,13 +38,13 @@ Measured against the exact tokenizer on 247 files from npm packages that were **
 
 | | median error | worst 1% | undercounts | undercounts by >10% |
 |---|---:|---:|---:|---:|
-| **token-budget** | **5.9%** | 41.7% | 55.5% | **19.0%** |
+| **token-estimate** | **5.9%** | 41.7% | 55.5% | **19.0%** |
 | `tokenx` | 16.1% | 22.6% | 65.2% | 52.2% |
 | `length / 4` | 23.5% | 15.4% | 85.8% | 71.7% |
 
 The gap is not spread evenly. It is concentrated in the content that tools actually move around:
 
-| content | token-budget | `tokenx` |
+| content | token-estimate | `tokenx` |
 |---|---:|---:|
 | base64, hashes, JWTs | **99.3%** | 25.2% |
 | indentation and blank lines | **110.9%** | 71.0% |

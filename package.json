@@ -1,5 +1,5 @@
 {
-  "name": "token-budget",
+  "name": "token-estimate",
   "version": "0.1.0",
   "description": "Estimate LLM token counts without shipping a 30 MB tokenizer, including the base64, hashes, non-Latin text and indentation that character-ratio estimates get badly wrong.",
   "main": "./dist/index.cjs",
@@ -58,10 +58,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Atomics-hub/token-budget.git"
+    "url": "git+https://github.com/Atomics-hub/token-estimate.git"
   },
-  "homepage": "https://github.com/Atomics-hub/token-budget#readme",
+  "homepage": "https://github.com/Atomics-hub/token-estimate#readme",
   "bugs": {
-    "url": "https://github.com/Atomics-hub/token-budget/issues"
+    "url": "https://github.com/Atomics-hub/token-estimate/issues"
   }
 }

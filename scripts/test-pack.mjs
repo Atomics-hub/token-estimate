@@ -22,15 +22,15 @@ const manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 for (const field of ['dependencies', 'optionalDependencies', 'peerDependencies']) {
   assert.equal(Object.keys(manifest[field] ?? {}).length, 0, field);
 }
-const consumer = await mkdtemp(join(tmpdir(), 'token-budget-consumer-'));
+const consumer = await mkdtemp(join(tmpdir(), 'token-estimate-consumer-'));
 await writeFile(join(consumer, 'package.json'), JSON.stringify({private: true, type: 'module'}));
 runNpm(['install', '--offline', '--ignore-scripts', '--no-audit', '--no-fund', '--cache', join(consumer, '.npm-cache'), join(artifacts, packed.filename)], consumer);
 await cp(join(root, 'test/checks.mjs'), join(consumer, 'checks.mjs'));
 const script = `import assert from 'node:assert/strict';
-import * as esm from 'token-budget';
+import * as esm from 'token-estimate';
 import {createRequire} from 'node:module';
 import {runChecks} from './checks.mjs';
-const cjs = createRequire(import.meta.url)('token-budget');
+const cjs = createRequire(import.meta.url)('token-estimate');
 assert.deepEqual(Object.keys(cjs).sort(), ['analyze', 'estimateTokens', 'fitsWithin', 'splitByTokens', 'supportedEncodings', 'truncateToTokens']);
 console.log(JSON.stringify({esm: runChecks(esm), cjs: runChecks(cjs), versions: process.versions}));\n`;
 await writeFile(join(consumer, 'consumer.mjs'), script);

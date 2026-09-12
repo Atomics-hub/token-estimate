@@ -3,7 +3,7 @@
 // The failure this avoids is specific: a command returns a page of base64 or a long hash listing,
 // a characters-over-four estimate reads it as a quarter of its real size, the request is assembled
 // and sent, and the API rejects it for exceeding the context window.
-import {estimateTokens, fitsWithin, truncateToTokens, analyze} from 'token-budget';
+import {estimateTokens, fitsWithin, truncateToTokens, analyze} from 'token-estimate';
 
 const BUDGET = 4000;
 

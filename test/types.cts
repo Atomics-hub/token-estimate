@@ -1,5 +1,5 @@
-import {estimateTokens, fitsWithin, truncateToTokens, splitByTokens, analyze, supportedEncodings} from 'token-budget';
-import type {Encoding, TruncateResult, Features} from 'token-budget';
+import {estimateTokens, fitsWithin, truncateToTokens, splitByTokens, analyze, supportedEncodings} from 'token-estimate';
+import type {Encoding, TruncateResult, Features} from 'token-estimate';
 
 const count: number = estimateTokens('hello', {encoding: 'cl100k_base'});
 const fits: boolean = fitsWithin('hello', 100, {mode: 'safe'});
