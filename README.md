@@ -5,7 +5,7 @@ Estimate how many tokens a string will cost, without installing a tokenizer.
 ```js
 import {estimateTokens, fitsWithin, truncateToTokens} from 'token-budget';
 
-estimateTokens('The build finished with no errors.');   // 8 (the exact count is 7)
+estimateTokens('The build finished with no errors.');   // 7, and the exact count is 7
 fitsWithin(hugeToolOutput, 8000);                        // false
 truncateToTokens(hugeToolOutput, 8000).text;             // trimmed to fit
 ```
@@ -26,6 +26,8 @@ Because the exact answer is expensive to carry:
 | `js-tiktoken` (exact) | 22.0 MB | 253 ms |
 | **token-budget** | **39 kB** | **~5 ms** |
 
+Estimating is also linear in input length: 160 kB of pathological whitespace takes about 5 ms.
+
 That 29.8 MB lands in `node_modules` whichever encoding you import, and a single encoding still costs 129 ms of process start. Throughput is comparable either way, so the whole trade is size. If you need exact counts and can afford the weight, use a real tokenizer — this package will tell you the same thing to within a few percent for a thousandth of the footprint.
 
 ## Why not characters ÷ 4
@@ -36,7 +38,7 @@ Measured against the exact tokenizer on 247 files from npm packages that were **
 
 | | median error | worst 1% | undercounts | undercounts by >10% |
 |---|---:|---:|---:|---:|
-| **token-budget** | **5.5%** | 40.7% | 53.8% | **15.8%** |
+| **token-budget** | **5.9%** | 41.7% | 55.5% | **19.0%** |
 | `tokenx` | 16.1% | 22.6% | 65.2% | 52.2% |
 | `length / 4` | 23.5% | 15.4% | 85.8% | 71.7% |
 
@@ -44,11 +46,11 @@ The gap is not spread evenly. It is concentrated in the content that tools actua
 
 | content | token-budget | `tokenx` |
 |---|---:|---:|
-| base64, hashes, JWTs | **99.2%** | 25.2% |
-| indentation and blank lines | **107.3%** | 71.0% |
-| URLs | **91.0%** | 133.4% |
-| emoji | **86.4%** | 63.6% |
-| English prose | 97.4% | 105.6% |
+| base64, hashes, JWTs | **99.3%** | 25.2% |
+| indentation and blank lines | **110.9%** | 71.0% |
+| URLs | **89.7%** | 133.4% |
+| emoji | **87.8%** | 63.6% |
+| Markdown prose | 98.7% | 105.6% |
 
 A 25% reading on base64 is a fourfold undercount. If that feeds a context-window check, the request is assembled, sent, and rejected.
 
@@ -61,7 +63,7 @@ estimateTokens(text);                    // closest on average
 estimateTokens(text, {mode: 'safe'});    // biased upward, for decisions
 ```
 
-`safe` undercounted **7.7%** of held-out samples on `o200k_base` and 11.7% on `cl100k_base`, against 65% and 67% for a plain estimate, at the cost of reading about 10% high. It is a calibration, not a guarantee — see Limits.
+`safe` undercounted **8.1%** of held-out samples on `o200k_base` and 13.8% on `cl100k_base`, against 65% and 67% for `tokenx`, at the cost of reading about 10% high. It is a calibration, not a guarantee — see Limits.
 
 `fitsWithin`, `truncateToTokens` and `splitByTokens` all use `safe` by default, because each one is making a decision rather than reporting a number.
 
@@ -105,9 +107,9 @@ Per-character rates (CJK, other scripts, long runs, astral characters) are **mea
 
 ## Limits
 
-This is an estimator. It has no vocabulary, so it cannot be exact, and `safe` is a calibrated bias rather than a proven bound — it undercounted 7.7% and 11.7% of held-out samples on the two encodings. For billing, quota enforcement, or anything where being wrong is expensive, use a real tokenizer.
+This is an estimator. It has no vocabulary, so it cannot be exact, and `safe` is a calibrated bias rather than a proven bound — it undercounted 8.1% and 13.8% of held-out samples on the two encodings. For billing, quota enforcement, or anything where being wrong is expensive, use a real tokenizer.
 
-Known weak spots, all measured: Greek and Cyrillic read about 29% high on `o200k_base`; emoji read 86% and 79% of true on the two encodings; dense CJK inside JSON data files is the worst case in the corpus at 37% of true. Only `o200k_base` and `cl100k_base` are calibrated — other model families differ, and `weights` exists for that. Text is treated as a whole: chat message framing and tool-call scaffolding add tokens this does not see.
+Known weak spots, all measured: Greek and Cyrillic read about 36% high on `o200k_base`; emoji read 88% and 80% of true on the two encodings; dense CJK inside JSON data files is the worst case in the corpus at 38% of true. Only `o200k_base` and `cl100k_base` are calibrated — other model families differ, and `weights` exists for that. Text is treated as a whole: chat message framing and tool-call scaffolding add tokens this does not see.
 
 ## License
 
